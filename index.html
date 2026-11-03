@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Conservation of Energy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f3f6fb; --card:#ffffff; --ink:#14213d; --muted:#5b6782; --line:#d9e0ec; --grid:#e6ecf5;
+  --force:#2f5bd3; --disp:#c98a00; --pos:#1f8a5b; --neg:#c8372d; --zero:#7a849a;
+  --ke:#e07a1f; --pe:#2f8f5b; --th:#c8372d; --soft:#eaf0fb;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f1626; --card:#172035; --ink:#e7ecf7; --muted:#9aa6c2; --line:#2a3653; --grid:#1f2a43;
+    --force:#7aa0ff; --disp:#f0b93a; --pos:#4cc58c; --neg:#ff6b5e; --zero:#8f9ab3;
+    --ke:#ff9d4d; --pe:#4cc58c; --th:#ff6b5e; --soft:#1d2945;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f1626; --card:#172035; --ink:#e7ecf7; --muted:#9aa6c2; --line:#2a3653; --grid:#1f2a43;
+  --force:#7aa0ff; --disp:#f0b93a; --pos:#4cc58c; --neg:#ff6b5e; --zero:#8f9ab3;
+  --ke:#ff9d4d; --pe:#4cc58c; --th:#ff6b5e; --soft:#1d2945;
+  color-scheme: dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Be Vietnam Pro",system-ui,sans-serif;font-size:16.5px;line-height:1.65}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--card)}
+a{color:var(--force)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--force);outline-offset:2px;border-radius:6px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
+.top nav{max-width:1100px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;padding:10px 16px;scrollbar-width:none}
+.top nav a{white-space:nowrap;text-decoration:none;color:var(--muted);font-weight:600;font-size:14px;padding:6px 12px;border-radius:999px}
+.top nav a:hover{background:var(--soft);color:var(--ink)}
+main{max-width:1100px;margin:0 auto;padding:0 16px 80px}
+.hero{padding:44px 0 18px;display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:center}
+.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.08;margin:0 0 14px;font-weight:800;letter-spacing:-.02em}
+.hero p{color:var(--muted);margin:0 0 10px;max-width:56ch}
+.formula-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 12px;font-weight:600;font-size:15px}
+section{padding:34px 0 10px;border-top:1px solid var(--line);margin-top:26px}
+.sec-head{display:flex;gap:14px;align-items:baseline}
+.sec-num{font-weight:800;color:var(--force);font-size:15px;min-width:28px}
+h2{font-size:clamp(23px,3.4vw,31px);line-height:1.2;margin:0 0 6px;letter-spacing:-.01em}
+h3{font-size:18.5px;margin:22px 0 6px}
+.lead{color:var(--muted);max-width:68ch;margin:0 0 14px}
+.prose{max-width:70ch}
+.prose p{margin:8px 0}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.lab{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:14px 0}
+.lab h4{margin:0 0 4px;font-size:16px}
+.lab .hint{color:var(--muted);font-size:14px;margin:0 0 10px}
+.lab svg{width:100%;height:auto;display:block;touch-action:none;user-select:none}
+.ctrl{display:grid;grid-template-columns:118px 1fr 70px;gap:10px;align-items:center;margin:6px 0;font-size:14.5px}
+.ctrl input[type=range]{width:100%;accent-color:var(--force)}
+.ctrl output{font-weight:700;text-align:right}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:7px 12px;cursor:pointer;font-weight:600;font-size:14px}
+.btn:hover{border-color:var(--force)}
+.btn.on{background:var(--force);color:#fff;border-color:var(--force)}
+.readout{background:var(--soft);border-radius:12px;padding:10px 14px;margin-top:10px;font-size:15px}
+.readout b{font-weight:800}
+.big{font-size:22px;font-weight:800}
+.pos{color:var(--pos)}.neg{color:var(--neg)}.zero{color:var(--zero)}
+.note{border-left:4px solid var(--force);background:var(--card);padding:10px 14px;border-radius:0 12px 12px 0;margin:12px 0}
+.trap{border-left-color:var(--neg)}
+.key{border-left-color:var(--pos)}
+.note p{margin:4px 0}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:10px 0}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:13.5px}
+.tblwrap{overflow-x:auto}
+.vocab{display:inline-block;font-size:13px;font-weight:600;color:var(--muted);background:var(--soft);border-radius:6px;padding:0 6px;margin-left:4px}
+.bars{display:flex;gap:14px;align-items:flex-end;height:150px;padding:6px 4px 0;border-bottom:2px solid var(--line)}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.bar i{display:block;width:70%;border-radius:8px 8px 0 0;transition:height .08s linear}
+.barlab{display:flex;gap:14px;font-size:13px;color:var(--muted);text-align:center}
+.barlab span{flex:1}
+/* quiz */
+.quiz{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.qtop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dot{width:24px;height:24px;border-radius:50%;border:1px solid var(--line);font-size:11.5px;display:grid;place-items:center;cursor:pointer;background:var(--paper);font-weight:700}
+.dot.cur{border-color:var(--force);border-width:2px}
+.dot.ok{background:var(--pos);color:#fff;border-color:var(--pos)}
+.dot.bad{background:var(--neg);color:#fff;border-color:var(--neg)}
+.qtext{font-weight:600;margin:14px 0 10px}
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 12px;margin:6px 0;cursor:pointer}
+.opt:hover{border-color:var(--force)}
+.opt.right{border-color:var(--pos);background:color-mix(in srgb,var(--pos) 14%,var(--card))}
+.opt.wrong{border-color:var(--neg);background:color-mix(in srgb,var(--neg) 12%,var(--card))}
+.explain{margin-top:12px;display:none}
+.explain.show{display:block}
+.score{font-weight:700}
+footer{color:var(--muted);font-size:14px;text-align:center;padding:30px 0}
+@media (max-width:800px){
+  .hero,.cols{grid-template-columns:1fr}
+  .ctrl{grid-template-columns:96px 1fr 60px}
+}
+</style>
+
+</head>
+<body>
+<header class="top"><nav aria-label="Lessons">
+  <a href="#types">1 Energy types</a><a href="#coaster">2 Roller coaster</a><a href="#spring">3 Springs</a>
+  <a href="#system">4 Choosing the system</a><a href="#orbit">5 Orbits</a><a href="#quiz">6 Quiz</a>
+  <a href="https://vanthienha199.github.io/ap-physics-work-energy/">Part 1: Work and power</a>
+</nav></header>
+<main>
+
+<div class="hero">
+  <div>
+    <h1>Conservation of energy, from zero</h1>
+    <p>Unit 3, part 2 (learning target ENG.2). Energy never disappears. It only moves between kinetic, potential, and thermal. Every part has a lab: press Play, drag a slider, and watch the energy bars trade places.</p>
+    <p>At the end there are 13 practice questions in AP style, each with a hint, an explanation, and a button that opens the matching lab.</p>
+    <div class="formula-strip">
+      <span class="chip">K = ½mv²</span><span class="chip">U<sub>g</sub> = mgy</span><span class="chip">U<sub>s</sub> = ½kx²</span><span class="chip">U<sub>G</sub> = −Gm₁m₂/r</span><span class="chip">E = K + U</span>
+    </div>
+  </div>
+  <div class="lab" aria-label="Quick try">
+    <h4>Quick try: drop a ball</h4>
+    <p class="hint">Drag the slider to let the ball fall. The green bar turns into the orange bar, and the total never changes.</p>
+    <svg id="heroSvg" viewBox="0 0 420 200" role="img" aria-label="A falling ball with energy bars"></svg>
+    <div class="ctrl"><label for="hd">Fallen</label><input id="hd" type="range" min="0" max="5" step="0.25" value="0"><output id="hdo"></output></div>
+    <div class="readout" id="heroOut"></div>
+  </div>
+</div>
+
+<!-- 1 TYPES -->
+<section id="types">
+  <div class="sec-head"><span class="sec-num">1</span><div><h2>Four kinds of energy you need</h2>
+  <p class="lead">Energy is a number (a scalar), measured in joules. It has no direction, so you just add the amounts.</p></div></div>
+  <div class="tblwrap"><table>
+    <tr><th>Energy</th><th>Formula</th><th>Use it when</th><th>Remember</th></tr>
+    <tr><td><b>Kinetic</b></td><td>K = ½mv²</td><td>Anything is moving</td><td>Never negative. Twice as fast means 4 times the K.</td></tr>
+    <tr><td><b>Gravitational, near Earth</b></td><td>U<sub>g</sub> = mgy</td><td>Objects near the ground (balls, ramps, roller coasters)</td><td>y is the height above a zero <b>you choose</b>. Only the change in height matters.</td></tr>
+    <tr><td><b>Spring (elastic)</b></td><td>U<sub>s</sub> = ½kx²</td><td>A spring is stretched or squeezed</td><td>x is measured from the relaxed length. Twice the squeeze means 4 times the energy.</td></tr>
+    <tr><td><b>Gravitational, far away</b></td><td>U<sub>G</sub> = −Gm₁m₂/r</td><td>Satellites, planets, escape</td><td>Zero at infinity, so it is always negative. Farther away means less negative.</td></tr>
+  </table></div>
+  <div class="cols">
+    <div class="prose">
+      <h3>The one big rule</h3>
+      <p><b>Total mechanical energy</b> is E = K + U.</p>
+      <p>If nothing from outside the system does work, E stays the same: <b>K₁ + U₁ = K₂ + U₂</b>.</p>
+      <p>If something does work on the system, or friction turns energy into heat: <b>K₁ + U₁ + W<sub>outside</sub> = K₂ + U₂ + thermal</b>.</p>
+    </div>
+    <div class="note key">
+      <p><b>Every energy problem in four steps.</b></p>
+      <p>1. Choose the system (what is inside, what is outside).<br>2. Pick a start moment and an end moment.<br>3. List every energy at the start and at the end. Drawing bars helps.<br>4. Write start + work in = end, and solve.</p>
+      <p>In falling problems the mass cancels: mgh = ½mv², so <b>v = √(2gh)</b>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 COASTER -->
+<section id="coaster">
+  <div class="sec-head"><span class="sec-num">2</span><div><h2>Roller coaster: K and U trade places</h2>
+  <p class="lead">Going down, potential energy turns into kinetic energy. Going up, it turns back. With no friction, the total stays exactly the same.</p></div></div>
+  <div class="cols">
+    <div class="prose">
+      <p>Watch the three bars while the ball rolls. With no friction, green (U) plus orange (K) always add up to the starting energy.</p>
+      <p><b>Speed depends only on how far it has dropped</b>, not on the shape of the track: v = √(2g × drop).</p>
+      <p>Turn on friction and a red bar (thermal energy) grows. The ball can no longer reach its starting height, and it finally stops at the bottom.</p>
+      <div class="note trap"><p><b>Trap:</b> “It is 15 m above the ground, so use h = 15.” No. Use how far it has <b>dropped</b> from where it started.</p></div>
+      <div class="note"><p><b>Try it.</b> Release from 4 m with no friction. Where is the ball fastest? Does it slow down on the small hill in the middle? Does it ever go higher than 4 m? Now change the mass: does the speed change?</p></div>
+    </div>
+    <div class="lab" id="lab-coaster">
+      <h4>Try it: release the ball</h4>
+      <svg id="cSvg" viewBox="0 0 420 220" role="img" aria-label="A ball rolling on a track"></svg>
+      <div class="ctrl"><label for="ch">Release height</label><input id="ch" type="range" min="2" max="4.5" step="0.5" value="4"><output id="cho"></output></div>
+      <div class="ctrl"><label for="cm">Mass</label><input id="cm" type="range" min="1" max="10" step="1" value="2"><output id="cmo"></output></div>
+      <div class="btns" role="group" aria-label="Friction">
+        <button class="btn on" data-mu="0">No friction</button><button class="btn" data-mu="0.05">Some friction</button><button class="btn" data-mu="0.15">Lots of friction</button>
+        <button class="btn" id="cRun">Release</button>
+      </div>
+      <div class="bars" aria-hidden="true">
+        <div class="bar"><i id="cU" style="background:var(--pe)"></i></div>
+        <div class="bar"><i id="cK" style="background:var(--ke)"></i></div>
+        <div class="bar"><i id="cT" style="background:var(--th)"></i></div>
+      </div>
+      <div class="barlab"><span>Potential U</span><span>Kinetic K</span><span>Thermal</span></div>
+      <div class="readout" id="cOut"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 SPRING -->
+<section id="spring">
+  <div class="sec-head"><span class="sec-num">3</span><div><h2>Springs: squeeze, launch, climb</h2>
+  <p class="lead">A squeezed spring stores energy U<sub>s</sub> = ½kx². Let go, and it becomes kinetic energy, then gravitational energy as the block climbs.</p></div></div>
+  <div class="cols">
+    <div class="prose">
+      <p><b>k</b> is how stiff the spring is (N/m). <b>x</b> is how far it is squeezed from its relaxed length.</p>
+      <p>The energy chain on a frictionless track:</p>
+      <p class="big">½kx² = ½mv² = mgh</p>
+      <p>So the launch speed is v = x√(k/m), and the block climbs to h = kx²/(2mg).</p>
+      <div class="note key"><p><b>The squares matter.</b> Squeeze twice as far: 4 times the energy, 2 times the speed, 4 times the height.</p></div>
+      <div class="note"><p><b>Try it.</b> Set x = 0.2 m, then 0.4 m. How many times higher does the block go? Now double the mass: what happens to the speed and the height?</p></div>
+    </div>
+    <div class="lab" id="lab-spring">
+      <h4>Try it: the spring launcher</h4>
+      <svg id="sSvg" viewBox="0 0 420 200" role="img" aria-label="A spring launching a block up a ramp"></svg>
+      <div class="ctrl"><label for="sk">Stiffness k</label><input id="sk" type="range" min="100" max="800" step="50" value="200"><output id="sko"></output></div>
+      <div class="ctrl"><label for="sx">Squeeze x</label><input id="sx" type="range" min="0.1" max="0.5" step="0.05" value="0.2"><output id="sxo"></output></div>
+      <div class="ctrl"><label for="sm">Mass</label><input id="sm" type="range" min="0.5" max="5" step="0.5" value="1"><output id="smo"></output></div>
+      <div class="btns"><button class="btn" id="sRun">Launch</button></div>
+      <div class="bars" aria-hidden="true">
+        <div class="bar"><i id="sUs" style="background:var(--force)"></i></div>
+        <div class="bar"><i id="sK" style="background:var(--ke)"></i></div>
+        <div class="bar"><i id="sUg" style="background:var(--pe)"></i></div>
+      </div>
+      <div class="barlab"><span>Spring U<sub>s</sub></span><span>Kinetic K</span><span>Gravity U<sub>g</sub></span></div>
+      <div class="readout" id="sOut"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 SYSTEM -->
+<section id="system">
+  <div class="sec-head"><span class="sec-num">4</span><div><h2>Choosing the system changes the story</h2>
+  <p class="lead">Same falling ball, two ways to describe it. Both are correct. The AP exam loves this.</p></div></div>
+  <div class="cols">
+    <div class="prose">
+      <p><b>Potential energy belongs to a pair of objects</b> (ball and Earth), not to the ball alone.</p>
+      <table>
+        <tr><th></th><th>System = ball only</th><th>System = ball + Earth</th></tr>
+        <tr><td>Gravity is</td><td>an <b>outside</b> force</td><td>an <b>inside</b> force</td></tr>
+        <tr><td>Potential energy?</td><td>None in the system</td><td>Yes, it decreases</td></tr>
+        <tr><td>Energy story</td><td>Gravity does positive work, which <b>adds</b> energy, so K grows</td><td>No outside work, so total stays the same, and U turns into K</td></tr>
+      </table>
+      <div class="note"><p><b>Try it.</b> Drag the slider halfway, then switch between the two systems. Which bar changes name? Is K the same in both?</p></div>
+    </div>
+    <div class="lab" id="lab-system">
+      <h4>Try it: draw the system boundary</h4>
+      <div class="btns" role="group" aria-label="System">
+        <button class="btn on" data-sys="ball">System = ball only</button><button class="btn" data-sys="earth">System = ball + Earth</button>
+      </div>
+      <svg id="ySvg" viewBox="0 0 420 210" role="img" aria-label="Falling ball with a dashed system boundary"></svg>
+      <div class="ctrl"><label for="yd">Fallen</label><input id="yd" type="range" min="0" max="5" step="0.25" value="2.5"><output id="ydo"></output></div>
+      <div class="bars" aria-hidden="true">
+        <div class="bar"><i id="yW" style="background:var(--force)"></i></div>
+        <div class="bar"><i id="yK" style="background:var(--ke)"></i></div>
+        <div class="bar"><i id="yU" style="background:var(--pe)"></i></div>
+      </div>
+      <div class="barlab"><span>Work from outside</span><span>Kinetic K</span><span>Potential U in system</span></div>
+      <div class="readout" id="yOut"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 ORBIT -->
+<section id="orbit">
+  <div class="sec-head"><span class="sec-num">5</span><div><h2>Orbits: energy below zero</h2>
+  <p class="lead">Far from Earth, we use U<sub>G</sub> = −GMm/r. It is zero at infinity, so every closer position is negative.</p></div></div>
+  <div class="cols">
+    <div class="prose">
+      <p>Think of it as a hole: the satellite is “stuck” in Earth’s energy well. Zero is the top of the hole (infinitely far away).</p>
+      <p>For a <b>circular orbit</b>:</p>
+      <p>K = GMm/(2r), U = −GMm/r, and E = K + U = −GMm/(2r).</p>
+      <p>A <b>higher orbit</b> is slower (smaller K), but U is less negative, and the total E is higher. Moving up costs energy.</p>
+      <div class="note key"><p><b>Escape speed:</b> give the satellite just enough kinetic energy that the total is <b>zero</b>. Then it slows down forever and stops only at infinity. v<sub>esc</sub> = √(2GM/r).</p></div>
+      <div class="note"><p><b>Try it.</b> Drag the orbit farther out. Which bars shrink? Then press “Escape speed”: what is the total energy?</p></div>
+    </div>
+    <div class="lab" id="lab-orbit">
+      <h4>Try it: move the satellite</h4>
+      <svg id="oSvg" viewBox="0 0 420 230" role="img" aria-label="A satellite orbiting a planet with energy bars"></svg>
+      <div class="ctrl"><label for="or">Orbit radius</label><input id="or" type="range" min="1.5" max="6" step="0.1" value="2"><output id="oro"></output></div>
+      <div class="btns" role="group" aria-label="Speed">
+        <button class="btn on" data-om="orbit">Circular orbit speed</button><button class="btn" data-om="escape">Escape speed</button>
+      </div>
+      <div class="readout" id="oOut"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 QUIZ -->
+<section id="quiz">
+  <div class="sec-head"><span class="sec-num">6</span><div><h2>Practice: 13 questions</h2>
+  <p class="lead">Try each one first. Use the hint if you are stuck, then open the lab to see it.</p></div></div>
+  <div class="quiz" id="quizBox">
+    <div class="qtop"><div class="dots" id="qDots"></div><div class="score" id="qScore"></div></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="note" id="qHint" style="display:none"></div>
+    <div class="explain note key" id="qExp"></div>
+    <div class="btns"><button class="btn" id="qHintBtn">Show a hint</button><button class="btn" id="qPrev">Previous</button><button class="btn" id="qNext">Next</button><button class="btn" id="qReset">Start over</button></div>
+  </div>
+</section>
+
+<footer>Conventions used here: g = 10 m/s². Part 1 (work and power): <a href="https://vanthienha199.github.io/ap-physics-work-energy/">vanthienha199.github.io/ap-physics-work-energy</a></footer>
+</main>
+
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent,text){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e;}
+function clear(s){while(s.firstChild)s.removeChild(s.firstChild);}
+function defs(svg){const d=el('defs',{},svg);['force','disp','pos','neg','pe','ke','muted'].forEach(c=>{const m=el('marker',{id:svg.id+'-'+c,viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'4',markerHeight:'4',orient:'auto-start-reverse'},d);el('path',{d:'M0,0 L10,5 L0,10 z',fill:'var(--'+c+')'},m);});}
+function arrow(svg,x1,y1,x2,y2,c,w){if(Math.hypot(x2-x1,y2-y1)<3)return null;return el('line',{x1,y1,x2,y2,stroke:'var(--'+c+')','stroke-width':w||4,'marker-end':'url(#'+svg.id+'-'+c+')','stroke-linecap':'round'},svg);}
+function txt(svg,x,y,s,o){o=o||{};return el('text',{x,y,'font-size':o.size||13,'font-weight':o.w||600,fill:o.fill||'var(--ink)','text-anchor':o.anchor||'start'},svg,s);}
+const fmt=(n,d)=>{d=d==null?1:d;let r=Math.round(n*Math.pow(10,d))/Math.pow(10,d);if(Object.is(r,-0))r=0;return r.toLocaleString('en-US',{maximumFractionDigits:d}).replace(/,/g,' ').replace('-','−');};
+function bindRange(id,suffix,fn){const r=$(id),o=$(id+'o');const up=()=>{if(o)o.textContent=r.value+suffix;fn();};r.addEventListener('input',up);return up;}
+function setOn(group,btn){group.forEach(b=>b.classList.toggle('on',b===btn));}
+function bar(id,v,max){$(id).style.height=(max>0?Math.max(0,Math.min(1,v/max))*100:0)+'%';}
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- hero drop ---------- */
+function drawHero(){
+  const svg=$('heroSvg');clear(svg);defs(svg);const m=2,H=5,d=+$('hd').value,y=H-d,U=m*10*y,K=m*10*d;
+  const top=20,bot=180,Y=v=>bot-(bot-top)*v/H;
+  el('line',{x1:20,y1:bot,x2:260,y2:bot,stroke:'var(--muted)','stroke-width':2},svg);
+  el('line',{x1:60,y1:Y(H),x2:60,y2:bot,stroke:'var(--line)','stroke-dasharray':'4 4'},svg);
+  txt(svg,66,Y(H)+4,'5 m',{size:11,fill:'var(--muted)'});
+  el('circle',{cx:140,cy:Y(y)-10,r:10,fill:'var(--ke)',stroke:'var(--ink)','stroke-width':1.5},svg);
+  const v=Math.sqrt(2*10*d);if(v>0.2)arrow(svg,170,Y(y)-14,170,Y(y)-14+v*5,'disp',3);
+  const bx=[290,340],bw=36,max=100;
+  [[U,'var(--pe)','U'],[K,'var(--ke)','K']].forEach((b,i)=>{const h=(bot-top)*b[0]/max;el('rect',{x:bx[i],y:bot-h,width:bw,height:h,rx:4,fill:b[1]},svg);txt(svg,bx[i]+bw/2,bot+16,b[2],{anchor:'middle',size:12});});
+  el('line',{x1:282,y1:top,x2:384,y2:top,stroke:'var(--ink)','stroke-dasharray':'3 3'},svg);txt(svg,388,top+4,'100 J',{size:10,fill:'var(--muted)'});
+  $('heroOut').innerHTML=`U = mgy = 2 × 10 × ${fmt(y,2)} = <b>${fmt(U,0)} J</b> · K = <b>${fmt(K,0)} J</b> · total = <b>100 J</b><br>Speed = √(2 × 10 × ${fmt(d,2)}) = <span class="big">${fmt(v,2)} m/s</span>`;
+}
+bindRange('hd',' m',drawHero)();
+
+/* ---------- roller coaster ---------- */
+const rawY=x=>3+3*Math.cos(Math.PI*x/6)+2*Math.exp(-Math.pow(x-6,2));
+const yMin=(()=>{let m=1e9;for(let i=0;i<=1200;i++)m=Math.min(m,rawY(12*i/1200));return m;})();
+const trackY=x=>rawY(x)-yMin;
+const dTrack=x=>(trackY(x+1e-4)-trackY(x-1e-4))/2e-4;
+let cMu=0,cs={x:0,v:0,th:0},cAnim=null,cRunning=false;
+function cStart(){const h=+$('ch').value;let a=0,b=4;for(let i=0;i<50;i++){const mid=(a+b)/2;if(trackY(mid)>h)a=mid;else b=mid;}cs={x:(a+b)/2,v:0,th:0};}
+function cStep(dt){
+  const g=10,m=+$('cm').value,E0=m*g*+$('ch').value;
+  for(let k=0;k<25;k++){
+    const h=dt/25,yp=dTrack(cs.x),q=Math.sqrt(1+yp*yp),sa=yp/q,ca=1/q;
+    if(cMu>0&&Math.abs(cs.v)<0.03&&Math.abs(yp)<=cMu){cs.v=0;continue;}
+    let a=-g*sa;if(cMu>0)a-=cMu*g*ca*Math.sign(cs.v||-sa);
+    const v0=cs.v;cs.v+=a*h;
+    if(cMu>0&&v0!==0&&Math.sign(cs.v)!==Math.sign(v0)&&Math.abs(yp)<=cMu)cs.v=0;
+    cs.th+=cMu*m*g*ca*Math.abs(cs.v)*h;
+    cs.x=Math.max(0,Math.min(12,cs.x+cs.v*ca*h));
+    const K=E0-m*g*trackY(cs.x)-cs.th,sp=Math.sqrt(Math.max(0,2*K/m));
+    cs.v=cs.v>=0?sp:-sp;
+  }
+}
+function drawC(){
+  const svg=$('cSvg');clear(svg);defs(svg);const m=+$('cm').value,h0=+$('ch').value,E0=m*10*h0;
+  const X=x=>20+380*x/12,Y=y=>200-170*y/7;
+  let p='';for(let i=0;i<=240;i++){const x=12*i/240;p+=(i?' L':'M')+X(x)+','+Y(trackY(x));}
+  el('path',{d:p+` L${X(12)},${Y(0)} L${X(0)},${Y(0)} Z`,fill:'var(--soft)'},svg);
+  el('path',{d:p,fill:'none',stroke:'var(--ink)','stroke-width':3},svg);
+  el('line',{x1:X(0),y1:Y(h0),x2:X(12),y2:Y(h0),stroke:'var(--pe)','stroke-dasharray':'5 4'},svg);
+  txt(svg,X(12),Y(h0)-6,'release height '+h0+' m',{anchor:'end',size:11,fill:'var(--pe)'});
+  const sx=X(cs.x),sy=Y(trackY(cs.x));
+  const tdx=X(cs.x+0.01)-X(cs.x),tdy=Y(trackY(cs.x+0.01))-sy,tl=Math.hypot(tdx,tdy);
+  el('circle',{cx:sx+9*tdy/tl,cy:sy-9*tdx/tl,r:9,fill:'var(--ke)',stroke:'var(--ink)','stroke-width':1.5},svg);
+  const y=trackY(cs.x),U=m*10*y,K=Math.max(0,E0-U-cs.th),v=Math.sqrt(2*K/m);
+  bar('cU',U,E0);bar('cK',K,E0);bar('cT',cs.th,E0);
+  $('cOut').innerHTML=`Height <b>${fmt(y,2)} m</b> · speed <b>${fmt(v,2)} m/s</b><br>U = <b>${fmt(U,0)} J</b> + K = <b>${fmt(K,0)} J</b> + thermal = <b>${fmt(cs.th,0)} J</b> → total <b>${fmt(E0,0)} J</b>`+(cMu===0?`<br>Fastest at the bottom: v = √(2 × 10 × ${h0}) = <b>${fmt(Math.sqrt(20*h0),2)} m/s</b>, for any mass.`:'<br>Friction keeps taking energy, so the ball never gets back to its release height.');
+}
+function cStop(){cancelAnimationFrame(cAnim);cRunning=false;$('cRun').textContent='Release';}
+function cReset(){cStop();cStart();drawC();}
+['ch','cm'].forEach(id=>bindRange(id,id==='ch'?' m':' kg',cReset));$('cho').textContent=$('ch').value+' m';$('cmo').textContent=$('cm').value+' kg';
+document.querySelectorAll('[data-mu]').forEach((b,_,all)=>b.addEventListener('click',()=>{cMu=+b.dataset.mu;setOn([...all],b);cReset();}));
+$('cRun').addEventListener('click',()=>{if(cRunning){cStop();return;}cStart();if(reduce){cs.x=6;cs.v=0;drawC();return;}cRunning=true;$('cRun').textContent='Stop';let last=performance.now(),t0=last;
+  const step=t=>{const dt=Math.min(0.04,(t-last)/1000);last=t;cStep(dt);drawC();const stuck=cMu>0&&cs.v===0&&Math.abs(dTrack(cs.x))<=cMu&&t-t0>800;if(stuck||t-t0>20000){cStop();return;}cAnim=requestAnimationFrame(step);};cAnim=requestAnimationFrame(step);});
+cReset();
+
+/* ---------- spring launcher ---------- */
+let sp=0,sAnim=null;
+function drawS(){
+  const svg=$('sSvg');clear(svg);defs(svg);const k=+$('sk').value,x0=+$('sx').value,m=+$('sm').value,E=0.5*k*x0*x0,h=E/(m*10),vmax=Math.sqrt(2*E/m);
+  const floorY=160,eqX=150,sc=160,rampX=250,topX=400,topY=50,bw=34,bh=26;
+  let xc=x0,K=0,Ug=0,bx,by,ang=0;
+  if(sp<0.3){const q=sp/0.3;xc=x0*(1-q);K=E-0.5*k*xc*xc;bx=eqX-xc*sc;by=floorY;}
+  else if(sp<0.5){xc=0;K=E;bx=eqX+(rampX-bw-eqX)*(sp-0.3)/0.2;by=floorY;}
+  else{xc=0;const q=(sp-0.5)/0.5;Ug=E*q;K=E-Ug;const L=Math.hypot(topX-rampX,floorY-topY)-bw-10,ux=(topX-rampX)/Math.hypot(topX-rampX,floorY-topY),uy=(floorY-topY)/Math.hypot(topX-rampX,floorY-topY);bx=rampX+ux*L*q-bw*0.2;by=floorY-uy*L*q;ang=-Math.atan2(floorY-topY,topX-rampX)*180/Math.PI;}
+  const Us=0.5*k*xc*xc;
+  el('line',{x1:20,y1:floorY,x2:rampX,y2:floorY,stroke:'var(--muted)','stroke-width':2},svg);
+  el('path',{d:`M${rampX},${floorY} L${topX},${topY} L${topX},${floorY} Z`,fill:'var(--soft)',stroke:'var(--muted)','stroke-width':2},svg);
+  el('rect',{x:10,y:floorY-60,width:10,height:60,fill:'var(--muted)'},svg);
+  const endX=sp<0.3?bx:eqX;let zp=`M20,${floorY-13}`;const n=12;for(let i=1;i<=n;i++){const xx=20+(endX-20)*i/n;zp+=` L${xx},${floorY-13+(i===n?0:(i%2?-9:9))}`;}
+  el('path',{d:zp,fill:'none',stroke:'var(--force)','stroke-width':2.5},svg);
+  el('line',{x1:eqX,y1:floorY+4,x2:eqX,y2:floorY+12,stroke:'var(--muted)'},svg);txt(svg,eqX,floorY+26,'relaxed',{anchor:'middle',size:10,fill:'var(--muted)'});
+  if(sp===0){el('line',{x1:eqX-x0*sc,y1:floorY+8,x2:eqX,y2:floorY+8,stroke:'var(--disp)','stroke-width':2},svg);txt(svg,eqX-x0*sc/2,floorY+40,'x = '+x0+' m',{anchor:'middle',size:11,fill:'var(--disp)'});}
+  const g=el('g',{transform:`translate(${bx},${by}) rotate(${ang})`},svg);
+  el('rect',{x:0,y:-bh,width:bw,height:bh,rx:4,fill:'var(--card)',stroke:'var(--ink)','stroke-width':2},g);
+  txt(g,bw/2,-8,m+' kg',{anchor:'middle',size:10});
+  txt(svg,topX-4,topY-8,'climbs to h = '+fmt(h,2)+' m',{anchor:'end',size:11,fill:'var(--pe)'});
+  bar('sUs',Us,E);bar('sK',K,E);bar('sUg',Ug,E);
+  $('sOut').innerHTML=`Spring energy ½kx² = ½ × ${k} × ${x0}² = <b>${fmt(E,2)} J</b><br>Launch speed: ½ × ${m} × v² = ${fmt(E,2)} → <b>v = ${fmt(vmax,2)} m/s</b> · Climb height: ${m} × 10 × h = ${fmt(E,2)} → <b>h = ${fmt(h,2)} m</b>`;
+}
+['sk','sx','sm'].forEach(id=>bindRange(id,id==='sk'?' N/m':id==='sx'?' m':' kg',()=>{cancelAnimationFrame(sAnim);sp=0;drawS();})());
+$('sRun').addEventListener('click',()=>{cancelAnimationFrame(sAnim);if(reduce){sp=1;drawS();return;}const t0=performance.now();const step=t=>{sp=Math.min(1,(t-t0)/3200);drawS();if(sp<1)sAnim=requestAnimationFrame(step);};sAnim=requestAnimationFrame(step);});
+
+/* ---------- system choice ---------- */
+let ySys='ball';
+function drawY(){
+  const svg=$('ySvg');clear(svg);defs(svg);const m=2,H=5,d=+$('yd').value,y=H-d,K=m*10*d,Uin=ySys==='earth'?m*10*y:0,W=ySys==='ball'?m*10*d:0;
+  const top=24,bot=160,Y=v=>bot-(bot-top)*v/H,cx=150;
+  el('path',{d:`M0,${bot+8} Q210,${bot-14} 420,${bot+8} L420,210 L0,210 Z`,fill:'var(--pe)',opacity:.25},svg);
+  txt(svg,330,196,'Earth',{size:12,fill:'var(--pe)'});
+  el('circle',{cx,cy:Y(y)-10,r:10,fill:'var(--ke)',stroke:'var(--ink)','stroke-width':1.5},svg);
+  arrow(svg,cx+34,Y(y)-14,cx+34,Y(y)+16,'neg',3);txt(svg,cx+42,Y(y)+8,'gravity',{size:11,fill:'var(--neg)'});
+  if(ySys==='ball'){el('rect',{x:cx-22,y:Y(y)-32,width:44,height:44,rx:8,fill:'none',stroke:'var(--force)','stroke-width':2,'stroke-dasharray':'6 4'},svg);txt(svg,cx-26,Y(y)-38,'system',{size:11,fill:'var(--force)'});}
+  else{el('rect',{x:20,y:Y(H)-32,width:380,height:206-(Y(H)-32),rx:12,fill:'none',stroke:'var(--force)','stroke-width':2,'stroke-dasharray':'6 4'},svg);txt(svg,26,Y(H)-38+0,'system',{size:11,fill:'var(--force)'});}
+  const max=100;bar('yW',W,max);bar('yK',K,max);bar('yU',Uin,max);
+  $('yOut').innerHTML=ySys==='ball'
+    ?`Earth is <b>outside</b>, so gravity is an outside force. Its work so far: 2 × 10 × ${fmt(d,2)} = <b>+${fmt(W,0)} J</b>, put <b>into</b> the system.<br>There is no potential energy in a ball-only system. Work in = K gained = <b>${fmt(K,0)} J</b>.`
+    :`Earth is <b>inside</b>, so gravity is an inside force and does no outside work.<br>U = ${fmt(Uin,0)} J + K = ${fmt(K,0)} J = <b>100 J</b>, always. Energy only changes form.`;
+}
+bindRange('yd',' m',drawY);$('ydo').textContent=$('yd').value+' m';
+document.querySelectorAll('[data-sys]').forEach((b,_,all)=>b.addEventListener('click',()=>{ySys=b.dataset.sys;setOn([...all],b);drawY();}));
+drawY();
+
+/* ---------- orbit ---------- */
+let oMode='orbit',oAng=0,oLast=null;const GMm=60;
+function drawO(){
+  const svg=$('oSvg');clear(svg);defs(svg);const r=+$('or').value,U=-GMm/r,K=oMode==='orbit'?GMm/(2*r):GMm/r,E=K+U;
+  const px=105,py=115,R=14,rr=R*r;
+  el('circle',{cx:px,cy:py,r:R,fill:'var(--pe)'},svg);txt(svg,px,py+R+14,'Earth',{anchor:'middle',size:10,fill:'var(--muted)'});
+  if(oMode==='orbit')el('circle',{cx:px,cy:py,r:rr,fill:'none',stroke:'var(--line)','stroke-dasharray':'4 4'},svg);
+  const sx=px+rr*Math.cos(oAng),sy=py-rr*Math.sin(oAng);
+  if(oMode==='escape'){let p=`M${sx},${sy}`;for(let i=1;i<=30;i++){const t=i/30,ang=oAng+0.9*t,rad=rr*(1+2.2*t*t);p+=` L${px+rad*Math.cos(ang)},${py-rad*Math.sin(ang)}`;}el('path',{d:p,fill:'none',stroke:'var(--disp)','stroke-dasharray':'5 4'},svg);}
+  const vlen=oMode==='orbit'?22:31;arrow(svg,sx,sy,sx-vlen*Math.sin(oAng),sy-vlen*Math.cos(oAng),'disp',3);
+  el('circle',{cx:sx,cy:sy,r:6,fill:'var(--ke)',stroke:'var(--ink)','stroke-width':1.5},svg);
+  const zx=250,zy=115,s=2.2,bw=36;
+  el('line',{x1:zx-10,y1:zy,x2:410,y2:zy,stroke:'var(--ink)','stroke-width':1.5},svg);txt(svg,zx-14,zy+4,'0',{anchor:'end',size:11,fill:'var(--muted)'});
+  [[K,'var(--ke)','K'],[U,'var(--pe)','U'],[E,'var(--force)','E total']].forEach((b,i)=>{const x=zx+i*54,h=Math.abs(b[0])*s;el('rect',{x,y:b[0]>=0?zy-h:zy,width:bw,height:Math.max(h,1),rx:3,fill:b[1]},svg);txt(svg,x+bw/2,b[0]>=0?zy-h-6:zy+h+14,fmt(b[0],1)+' J',{anchor:'middle',size:10});txt(svg,x+bw/2,16,b[2],{anchor:'middle',size:11,fill:'var(--muted)'});});
+  $('oOut').innerHTML=`r = <b>${fmt(r,1)}</b> Earth radii · U = −GMm/r = <b>${fmt(U,1)} J</b> · K = <b>${fmt(K,1)} J</b> · E = <b>${fmt(E,1)} J</b><br>`+(oMode==='orbit'?'Circular orbit: K is exactly half of |U|, so the total is negative. The satellite is trapped.':'Escape speed: K exactly cancels U, so the total is <b>0</b>. It slows down forever and stops only at infinity.')+`<br><span style="color:var(--muted);font-size:14px">Energies here are in units where GMm/R = 60 J.</span>`;
+}
+bindRange('or',' R',drawO);$('oro').textContent=$('or').value+' R';
+document.querySelectorAll('[data-om]').forEach((b,_,all)=>b.addEventListener('click',()=>{oMode=b.dataset.om;setOn([...all],b);drawO();}));
+let oVis=false,oRaf=0;
+function oLoop(t){if(!oVis){oRaf=0;oLast=null;return;}if(oLast!=null&&oMode==='orbit'){const r=+$('or').value;oAng+=(t-oLast)/1000*1.6/Math.pow(r/2,1.5);}oLast=t;drawO();oRaf=requestAnimationFrame(oLoop);}
+oAng=0.6;drawO();
+if(!reduce&&'IntersectionObserver' in window)new IntersectionObserver(e=>{oVis=e[0].isIntersecting;if(oVis&&!oRaf)oRaf=requestAnimationFrame(oLoop);}).observe($('oSvg'));
+
+/* ---------- quiz ---------- */
+const Q=[
+{q:'1. A 2-kg ball is dropped from rest 5 m above the ground. Air resistance is negligible. How fast is it moving just before it hits the ground?',o:['5 m/s','7.1 m/s','10 m/s','50 m/s','100 m/s'],a:2,e:'mgh = ½mv², and the mass cancels: v = √(2gh) = √(2 × 10 × 5) = √100 = <b>10 m/s</b>. Trap: 100 m/s (forgot the square root).',s:'types'},
+{q:'2. The same ball is now dropped from 4 times the height (20 m). Its speed just before landing is:',o:['the same','2 times bigger','4 times bigger','8 times bigger','16 times bigger'],a:1,e:'v = √(2gh). Four times the height gives √4 = <b>2 times</b> the speed. Check: √(2 × 10 × 20) = 20 m/s, which is 2 × 10 m/s.',s:'coaster'},
+{q:'3. A spring with k = 200 N/m is compressed 0.10 m and launches a 0.5-kg block across a frictionless floor. What is the block’s speed after it leaves the spring?',o:['0.2 m/s','1 m/s','2 m/s','4 m/s','20 m/s'],a:2,e:'U<sub>s</sub> = ½kx² = ½ × 200 × 0.10² = 1 J. Then 1 = ½ × 0.5 × v², so v² = 4 and v = <b>2 m/s</b>. Trap: forgetting to square x.',s:'spring'},
+{q:'4. The spring is now compressed twice as far (0.20 m). The launch speed becomes:',o:['the same','√2 times bigger','2 times bigger','4 times bigger','8 times bigger'],a:2,e:'Twice the squeeze gives 4 times the spring energy (x is squared). K = ½mv² is 4 times bigger, so v is √4 = <b>2 times</b> bigger.',s:'spring'},
+{q:'5. A frictionless roller coaster starts from rest at the top of a 20 m hill. How fast is it moving when it is 15 m above the ground?',o:['5 m/s','10 m/s','14.1 m/s','17.3 m/s','20 m/s'],a:1,e:'It has only <b>dropped 5 m</b>. v = √(2 × 10 × 5) = <b>10 m/s</b>. Trap D: using 15 m (the height it still has). Trap E: using the whole 20 m.',s:'coaster'},
+{q:'6. On a frictionless roller coaster track, where is the cart moving fastest?',o:['At the highest point','At the lowest point','Where the track is steepest','Right after it starts','The speed is the same everywhere'],a:1,e:'K + U stays constant. U is smallest at the <b>lowest point</b>, so K (and speed) is largest there.',s:'coaster'},
+{q:'7. A ball falls freely. The system is the ball only (Earth is outside). Which statement is correct?',o:['The ball’s kinetic energy stays constant','Gravity does positive work on the system, so the system’s energy increases','The system’s gravitational potential energy decreases','No external force acts on the system','The system’s total energy decreases'],a:1,e:'Potential energy belongs to the ball–Earth pair, so a ball-only system has <b>no</b> potential energy (C is wrong). Gravity is an <b>outside</b> force doing positive work, which adds energy, so K increases.',s:'system'},
+{q:'8. Now the system is the ball and Earth together. As the ball falls (no air resistance):',o:['Gravity does external work, so total energy increases','Total mechanical energy stays constant; potential energy turns into kinetic energy','Kinetic energy turns into potential energy','The system loses energy to the Earth','Mechanical energy decreases because gravity is non-conservative'],a:1,e:'Gravity is now an <b>inside</b> force, so no outside work is done. The total stays constant and U turns into K.',s:'system'},
+{q:'9. A 1-kg block slides from rest down a rough ramp 3 m high and reaches the bottom at 6 m/s. How much energy became thermal energy?',o:['0 J','12 J','18 J','30 J','48 J'],a:1,e:'Start: U = 1 × 10 × 3 = 30 J. End: K = ½ × 1 × 6² = 18 J. The missing <b>12 J</b> became thermal energy because of friction.',s:'coaster'},
+{q:'10. A block on a horizontal spring oscillates on a frictionless surface. At the moment of maximum compression:',o:['K is maximum and U<sub>s</sub> is zero','K is zero and U<sub>s</sub> is maximum','K and U<sub>s</sub> are equal','Both are zero','Both are maximum'],a:1,e:'At maximum compression the block stops for an instant, so <b>K = 0</b> and all the energy is in the spring.',s:'spring'},
+{q:'11. A 1-kg ball and a 5-kg ball are dropped from the same height (no air resistance). Just before landing:',o:['They have the same speed and the same kinetic energy','They have the same speed, but the 5-kg ball has 5 times the kinetic energy','They have different speeds but the same kinetic energy','The 5-kg ball is faster','The 1-kg ball is faster'],a:1,e:'v = √(2gh) has no mass in it, so the <b>speeds are equal</b>. K = ½mv², so 5 times the mass means <b>5 times the K</b> (it also started with 5 times the U).',s:'types'},
+{q:'12. A satellite moves from a low circular orbit to a higher circular orbit. What happens to its gravitational potential energy U and its kinetic energy K?',o:['U increases (becomes less negative) and K decreases','U decreases and K increases','Both increase','Both decrease','Both stay the same'],a:0,e:'U = −GMm/r: a bigger r is closer to zero, so U <b>increases</b>. Higher orbits are slower, so K = GMm/(2r) <b>decreases</b>. The total E = −GMm/(2r) goes up, so moving higher costs energy.',s:'orbit'},
+{q:'13. A rocket leaves Earth at exactly escape speed. Its total mechanical energy (rocket–Earth system) is:',o:['negative','zero','positive and equal to its kinetic energy','equal to −GMm/r','it depends on its mass'],a:1,e:'Escape speed is defined as the speed where the total energy is <b>zero</b>: K = +GMm/r exactly cancels U = −GMm/r. The rocket slows down forever and stops only at infinity, where both are zero.',s:'orbit'}
+];
+const HINTS=[
+ 'Potential energy at the top becomes kinetic energy at the bottom. Does the mass matter?',
+ 'v = √(2gh). What happens to a square root when the inside is 4 times bigger?',
+ 'Spring energy ½kx² turns into kinetic energy ½mv². Square the 0.10 first.',
+ 'Twice the squeeze gives how much spring energy? If K is that many times bigger, how does v change?',
+ 'Use how far it has dropped, not how high it still is.',
+ 'K + U stays the same. Where is U smallest?',
+ 'Potential energy belongs to a pair of objects. If Earth is outside, can the system have gravitational PE?',
+ 'Is gravity an inside or an outside force now?',
+ 'Compare the energy at the top with the energy at the bottom. Where did the difference go?',
+ 'What is the block’s speed at the exact moment it is squeezed the most?',
+ 'Does v = √(2gh) have m in it? Does K = ½mv²?',
+ 'U = −GMm/r is negative. Is −10 bigger or smaller than −20? Higher orbits are slower.',
+ 'A rocket that barely makes it stops at infinity. What are K and U there?'
+];
+const LABS=[['lab-system',['[data-sys="earth"]']],['lab-coaster',['[data-mu="0"]']],['lab-spring'],['lab-spring'],['lab-coaster',['[data-mu="0"]']],['lab-coaster',['[data-mu="0"]']],['lab-system',['[data-sys="ball"]']],['lab-system',['[data-sys="earth"]']],['lab-coaster',['[data-mu="0.15"]']],['lab-spring'],['lab-coaster'],['lab-orbit',['[data-om="orbit"]']],['lab-orbit',['[data-om="escape"]']]];
+let hintOn=false,lastCur=-1;
+function goLab(i){const [id,sel]=LABS[i];(sel||[]).forEach(q=>{const b=document.querySelector(q);if(b)b.click();});$(id).scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});}
+const KEY='enc-quiz-v1';let st={cur:0,ans:{}};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&typeof s.cur==='number')st=s;}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}};
+const secName={types:'Part 1: Energy types',coaster:'Part 2: Roller coaster',spring:'Part 3: Springs',system:'Part 4: Choosing the system',orbit:'Part 5: Orbits'};
+function renderQ(){
+  const q=Q[st.cur],d=$('qDots');d.innerHTML='';
+  Q.forEach((_,i)=>{const b=document.createElement('button');b.className='dot'+(i===st.cur?' cur':'')+(st.ans[i]!=null?(st.ans[i]===Q[i].a?' ok':' bad'):'');b.textContent=i+1;b.setAttribute('aria-label','Question '+(i+1));b.onclick=()=>{st.cur=i;save();renderQ();};d.appendChild(b);});
+  const done=Object.keys(st.ans).length,right=Object.keys(st.ans).filter(i=>st.ans[i]===Q[i].a).length;
+  $('qScore').textContent=`${right}/${done} correct so far`;
+  $('qText').textContent=q.q;const box=$('qOpts');box.innerHTML='';const picked=st.ans[st.cur];
+  q.o.forEach((t,i)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=String.fromCharCode(65+i)+'. '+t;
+    if(picked!=null){if(i===q.a)b.classList.add('right');else if(i===picked)b.classList.add('wrong');}
+    b.onclick=()=>{if(st.ans[st.cur]!=null)return;st.ans[st.cur]=i;save();renderQ();};box.appendChild(b);});
+  if(st.cur!==lastCur){hintOn=false;lastCur=st.cur;}
+  const hb=$('qHint');hb.style.display=hintOn&&picked==null?'block':'none';hb.innerHTML='<p><b>Hint.</b> '+HINTS[st.cur]+'</p>';
+  $('qHintBtn').style.display=picked==null?'':'none';$('qHintBtn').textContent=hintOn?'Hide the hint':'Show a hint';
+  const ex=$('qExp');if(picked!=null){ex.classList.add('show');ex.innerHTML=`<p><b>${picked===q.a?'Correct.':'Not quite. The answer is '+String.fromCharCode(65+q.a)+'.'}</b></p><p>${q.e}</p><div class="btns"><button class="btn" id="qLab">Try it in the lab</button><a class="btn" href="#${q.s}" style="text-decoration:none">Review ${secName[q.s]}</a></div>`;$('qLab').onclick=()=>goLab(st.cur);}else{ex.classList.remove('show');ex.innerHTML='';}
+}
+$('qHintBtn').onclick=()=>{hintOn=!hintOn;renderQ();};
+$('qPrev').onclick=()=>{st.cur=(st.cur+Q.length-1)%Q.length;save();renderQ();};
+$('qNext').onclick=()=>{st.cur=(st.cur+1)%Q.length;save();renderQ();};
+$('qReset').onclick=()=>{st={cur:0,ans:{}};save();renderQ();};
+renderQ();
+})();
+</script>
+</body>
+</html>
